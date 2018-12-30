@@ -7,28 +7,29 @@ incremento = 1
 decrésimo = -1
 minimumWeight = 1
 maximumWeight = 20
-defaultFlashCard = ['help']
+defaultFlashCard = ['help','hiragana']
 
 
-def addDict(dict, key, filename):
+def addDic(dic, key, filename):
     with open(filename, "a", encoding='utf-8') as f:
-        f.write(key + sep + dict[key][0] + sep + str(dict[key][1]) + "\n")
+        f.write(key + sep + dic[key][0] + sep + str(dic[key][1]) + "\n")
 
-def readDict(filename):
+def readDic(filename):
     if os.path.isfile(filename) == False:
         return {}
     with open(filename, encoding='utf-8') as f:
-        dict = {}
+        dic = {}
         for line in f:
-            line = line.rstrip()
-            values = line.split(sep)
-            dict[values[0]] = [values[1],int(values[2])]
-        return(dict)
+            if line != '':
+               line = line.rstrip()
+               values = line.split(sep)
+               dic[values[0]] = [values[1],int(values[2])]
+        return(dic)
 
-def writeDict(dict, fileName):
+def writeDic(dic, fileName):
     with open(fileName, "w", encoding='utf-8') as f:
-        for key in dict.keys():
-            f.write(key + sep + dict[key][0] + sep + str(dict[key][1]) + "\n")
+        for key in dic.keys():
+            f.write(key + sep + dic[key][0] + sep + str(dic[key][1]) + "\n")
 
 def createNewFlashCard(flashCardName): #creates or uploads a file; does not return value
    for value in defaultFlashCard:#does not allow changes in the default flashCard
@@ -44,7 +45,7 @@ def createNewFlashCard(flashCardName): #creates or uploads a file; does not retu
          return main()
        # else:
       #      return {}
-   dic = readDict(fileName)
+   dic = readDic(fileName)
    while True:
       print('What is the key?')
       key = input()
@@ -53,7 +54,7 @@ def createNewFlashCard(flashCardName): #creates or uploads a file; does not retu
       print ('What is the value?')
       value = input()
       dic[key] = [value,defaultWeight]
-      addDict(dic, key, fileName)
+      addDic(dic, key, fileName)
 
 def testFlashcard(flashCardName):
    fileName = flashCardName+'.txt'
@@ -64,7 +65,7 @@ def testFlashcard(flashCardName):
          print('restarting the program')
          return main()
 
-   dic = readDict(fileName)
+   dic = readDic(fileName)
    if dic == {}:
       print('File is empty, restarting the program.')
       return main()
@@ -79,7 +80,7 @@ def testFlashcard(flashCardName):
       dic[testLetterList[2]][1] = dicList[1]
       times -= 1
 
-   writeDict(dic, fileName)
+   writeDic(dic, fileName)
    correctAnswersPercentage = round(correctAnswers/stillTimes*100)
    if correctAnswersPercentage >= 80:
       print(f'Good job! You got {correctAnswersPercentage}% of the questions corrrect!')
@@ -106,7 +107,7 @@ def testLetter (dic): #returns a list with the answer, the actual answer and the
     sys.stdout.flush()
     sys.stdout.buffer.write(letra.encode('utf8'))
     print()
-    answer = input()
+    answer = input().strip()
     return [answer,actualAnswer,letra]
 
 def corrigir(dic,answer,actualAnswer,key): #regulates keys' weights/checks if one missed or not
@@ -122,13 +123,6 @@ def corrigir(dic,answer,actualAnswer,key): #regulates keys' weights/checks if on
          dic[key][1] += incremento
       return [0,dic[key][1]]
 
-#def corrigir (answer,actualAnswer):
-   # if answer == actualAnswer:
-    #    return 1
-  #  else:
-   #     print(f"unfortunately, you are wrong... The correct answer is {actualAnswer}")
-     #   return 0
-
 def main (firstTime = 0):
    print('See file "help" for help')
    if len(sys.argv) > 1 and firstTime == 1:
@@ -136,9 +130,12 @@ def main (firstTime = 0):
       return main()
       
    print('Do you want to create a new flashcard or upload a flashcard?')
-   if input() == 'yes':
+   input = input()
+   if input == 'yes':
         print('What is the name of the Flashcard?')
         createNewFlashCard(input())
+   elif input == reset:
+      reset()
 
    print('Ok, which flashcard do you want to see?')
    testFlashcard(input())

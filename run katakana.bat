@@ -1,5 +1,6 @@
 @echo off
 :loop
-flashcard.py katakana
+flashcard.py 
+rem katakana
 pause
 goto loop
