@@ -1,6 +1,7 @@
 import random
 import os.path
 import sys
+from os import listdir
 sep = ','
 defaultWeight = 10
 incremento = 1
@@ -8,6 +9,7 @@ decrésimo = -1
 minimumWeight = 1
 maximumWeight = 20
 defaultFlashCard = ['help','hiragana']
+extension = '.dic'
 
 
 def addDic(dic, key, filename):
@@ -37,7 +39,7 @@ def createNewFlashCard(flashCardName): #creates or uploads a file; does not retu
          print('Sorry, but you cannot make changes on this flashcard.')
          print('restarting the program')
          return main()
-   fileName = flashCardName+'.txt'
+   fileName = flashCardName + extension
    if os.path.isfile(fileName) == False:
       print ('this file does not exist. Do you want to create it?')
       if input() != 'yes':
@@ -57,7 +59,7 @@ def createNewFlashCard(flashCardName): #creates or uploads a file; does not retu
       addDic(dic, key, fileName)
 
 def testFlashcard(flashCardName):
-   fileName = flashCardName+'.txt'
+   fileName = flashCardName + extension
    if os.path.isfile(fileName) == False:
       createNewFlashCard(flashCardName)
       print('Do you want to play this flashcard?')
@@ -123,6 +125,15 @@ def corrigir(dic,answer,actualAnswer,key): #regulates keys' weights/checks if on
          dic[key][1] += incremento
       return [0,dic[key][1]]
 
+def reset():
+   fileNameList = os.listdir()
+   for fileName in fileNameList:
+         if fileName.endswith(extension):
+            dic = readDic(fileName)
+            for key in dic.keys():
+               dic[key][1] = defaultWeight
+            writeDic(dic,fileName)
+
 def main (firstTime = 0):
    print('See file "help" for help')
    if len(sys.argv) > 1 and firstTime == 1:
@@ -130,12 +141,17 @@ def main (firstTime = 0):
       return main()
       
    print('Do you want to create a new flashcard or upload a flashcard?')
-   input = input()
-   if input == 'yes':
+   response = input()
+   if response == 'yes':
         print('What is the name of the Flashcard?')
         createNewFlashCard(input())
-   elif input == reset:
-      reset()
+   elif response == 'reset':
+      print('are you sure you want to reset all weights?')
+      if input() == 'yes':
+         reset()
+      else:
+         print('restarting the program')
+         return main()
 
    print('Ok, which flashcard do you want to see?')
    testFlashcard(input())

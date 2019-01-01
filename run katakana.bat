@@ -3,4 +3,5 @@
 flashcard.py 
 rem katakana
 pause
+cls
 goto loop
